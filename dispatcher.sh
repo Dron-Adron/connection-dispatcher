@@ -5,13 +5,14 @@ duration=15
 
 apt-get update
 apt-get install iptables -y
-iptables-save > iptables_copy.txt
+iptables-save > iptables.rules
 disconnect() {
   echo "Disconnecting stream..."
   iptables -F
   iptables -I OUTPUT -d $ip -j DROP
   sleep $duration
-  iptables-restore < iptables_copy.txt
+  iptables -D OUTPUT -d $ip -j DROP
+  iptables-restore < iptables.rules
   echo "Connection alive!"
 }
 
@@ -35,7 +36,7 @@ change_parameters() {
 while true; do
   echo "Enter 'c' to change parameters"
   echo "Enter 'e' to exit"
-  echo "Enter something another to kill connection!"
+  echo "Enter something another to kill connection"
   read -p ">> " input
 
   case $input in
@@ -44,7 +45,6 @@ while true; do
       ;;
     e)
       echo "Exiting the script..."
-      iptables-restore < iptables_copy.txt
       exit 0
       ;;
     *)
